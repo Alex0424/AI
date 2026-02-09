@@ -4,6 +4,8 @@ Host your AI locally!
 
 ## Host in TUI with Ollama
 
+![private_gpt image](./img/ollama.png)
+
 ### [Download & Install](https://ollama.com/download)
 
 ```sh
@@ -18,7 +20,9 @@ Chose your desired model [here](https://ollama.com/search)
 ollama run <model>
 ```
 
-## Host in GUI with [Privater GPT](https://docs.privategpt.dev/quickstart/getting-started/quickstart)
+## Host in GUI with [Private GPT](https://docs.privategpt.dev/quickstart/getting-started/quickstart)
+
+![private_gpt image](./img/private_gpt.png)
 
 ### Requirements
 
@@ -26,9 +30,9 @@ ollama run <model>
 - Python
 - [Pyenv](https://github.com/pyenv/pyenv)
 
-### Install - BETA: not completed, dev in progress
+### Install
 
-set python environment to 3.10:
+set python environment to 3.11 (Private-GPT runs 3.11):
 
 ```sh
 pyenv install 3.11
@@ -57,7 +61,7 @@ or
 poetry install --extras "ui llms-ollama embeddings-ollama vector-stores-qdrant"
 ```
 
-Run AI:
+option 1: standard run in docker compose:
 
 PGPT wants you to run `docker-compose up` command don't do it.
 don't run `docker-compose up` up as is the old (deprecated)
@@ -67,7 +71,7 @@ instead run this command:
 docker compose up
 ```
 
-Run a specific profile:
+option 2: run a specific profile:
 
 ```sh
 cat settings-ollama.yaml
@@ -76,3 +80,34 @@ cat settings-ollama.yaml
 ```sh
 PGPT_PROFILES=ollama make run
 ```
+
+### Debug
+
+Error:
+
+```sh
+# Command:
+PGPT_PROFILES=ollama make run
+
+# Error:
+ModuleNotFoundError: No module named '_sqlite3'
+```
+
+Fix:
+
+```sh
+# SQLite dev packaged (Fedora):
+sudo dnf install -y sqlite sqlite-devel
+
+# Aditional features:
+sudo dnf install -y bzip2-devel readline-devel libffi-devel openssl-devel
+
+# Reinstall version:
+pyenv uninstall 3.11.14
+pyenv install 3.11.14
+pyenv global 3.11.14
+
+# Try again:
+PGPT_PROFILES=ollama make run
+```
+
