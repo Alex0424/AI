@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "about-me-ai-backend"
+version = "0.1.0"
+description = "FastAPI backend with Ollama + LlamaIndex + ChromaDB RAG"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+
+    # LlamaIndex core
+    "llama-index>=0.10.0",
+
+    # Ollama integrations
+    "llama-index-llms-ollama",
+    "llama-index-embeddings-ollama",
+
+    # Chroma
+    "chromadb>=0.4.24",
+    "llama-index-vector-stores-chroma",
+
+    # Utils
+    "pydantic>=2.0",
+]
+
+[tool.setuptools]
+py-modules = ["main"]

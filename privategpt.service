@@ -1,0 +1,14 @@
+[Unit]
+Description=PrivateGPT (Ollama)
+After=network.target
+
+[Service]
+User=lindholmalex_la
+WorkingDirectory=/home/lindholmalex_la/private-gpt
+Environment=PGPT_PROFILES=ollama
+ExecStart=/home/lindholmalex_la/private-gpt/.venv/bin/python -m private_gpt
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -111,3 +111,63 @@ pyenv global 3.11.14
 PGPT_PROFILES=ollama make run
 ```
 
+## Ollama API
+
+### Examples
+
+specify a model:
+
+```sh
+curl http://localhost:11434/api/generate \
+  -d '{
+    "model": "llama3.1",
+    "prompt": "Say hello in one sentence."
+  }'
+```
+
+for embeddings:
+
+```sh
+curl http://localhost:11434/api/embeddings \
+  -d '{
+    "model": "nomic-embed-text",
+    "prompt": "Hello world"
+  }'
+```
+
+
+## Alexander AI Stack
+
+### Stack INFO
+
+
+- Frontend & UI: next.js
+- API: FastAPI
+- LLM & embeddings: Ollama
+- RAG: LlamaIndex + ChromaDB
+
+[embeddings](https://ollama.com/library/nomic-embed-text)
+
+Tree:
+
+```sh
+backend/
+ ├─ main.py
+ ├─ data/
+ │   ├─ about.md
+ │   ├─ projects.md
+ │   └─ experience.md
+ └─ chroma_db/
+```
+
+RUN API:
+
+```sh
+uvicorn main:app --reload
+```
+
+RUN Frontend
+
+```sh 
+npm run dev
+```
