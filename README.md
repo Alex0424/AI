@@ -140,8 +140,7 @@ curl http://localhost:11434/api/embeddings \
 
 ### Stack INFO
 
-
-- Frontend & UI: next.js
+- Frontend & UI: fetch with JS & display in HTML & CSS
 - API: FastAPI
 - LLM & embeddings: Ollama
 - RAG: LlamaIndex + ChromaDB
@@ -151,23 +150,24 @@ curl http://localhost:11434/api/embeddings \
 Tree:
 
 ```sh
-backend/
- ├─ main.py
- ├─ data/
- │   ├─ about.md
- │   ├─ projects.md
- │   └─ experience.md
- └─ chroma_db/
+.
+├── backend
+│   ├── chroma_db
+│   ├── data
+│   │   └── about.md
+│   └─── main.py
+├── cloud_script_install.sh
+├── docker-compose.yml
+├── Dockerfile
+├── hosting.md
+├── LICENSE
+├── privategpt.service
+├── pyproject.toml
+└── README.md
 ```
 
 RUN API:
 
 ```sh
 uvicorn main:app --reload
-```
-
-RUN Frontend
-
-```sh 
-npm run dev
 ```
