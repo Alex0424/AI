@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import logging
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
@@ -12,6 +13,9 @@ from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.llms.ollama import Ollama
 
 import chromadb
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
@@ -26,7 +30,8 @@ Settings.embed_model = OllamaEmbedding(
 Settings.llm = Ollama(
     model="llama3.1",
     temperature=0.2,
-    base_url=OLLAMA_BASE_URL #"http://localhost:11434",
+    base_url=OLLAMA_BASE_URL, #"http://localhost:11434",
+    request_timeout=120.0,
 )
 
 # ---- Load + Index documents ----
@@ -61,7 +66,13 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 def chat(req: ChatRequest):
+    
+    logger.info(f"User message: {req.message}")
+    
     response = query_engine.query(req.message)
+    
+    logger.info(f"AI response: {response}")
+    
     return {"answer": str(response)}
 
 app.add_middleware(
