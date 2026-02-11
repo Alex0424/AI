@@ -135,15 +135,18 @@ curl http://localhost:11434/api/embeddings \
   }'
 ```
 
-
 ## Alexander AI Stack
 
 ### Stack INFO
 
-- Frontend & UI: fetch with JS & display in HTML & CSS
-- API: FastAPI
-- LLM & embeddings: Ollama
-- RAG: LlamaIndex + ChromaDB
+- Frontend & UI: Static HTML, CSS, and Javascript (fetch for API calls)
+- Backend:
+  - Edge/Gateway: Caddy (TLS termination + reverse proxy)
+  - API: FastAPI
+  - LLM Runtime: Ollama
+  - Embeddings: Ollama (nomic-embed-text)
+  - RAG Orchestration: LlamaIndex
+  - Vector Store: ChromaDB
 
 [embeddings](https://ollama.com/library/nomic-embed-text)
 
@@ -169,5 +172,5 @@ Tree:
 RUN API:
 
 ```sh
-uvicorn main:app --reload
+docker compose up --build
 ```

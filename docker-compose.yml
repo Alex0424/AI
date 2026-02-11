@@ -17,7 +17,7 @@ services:
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./backend/data:/app/data
       - ./backend/chroma_db:/app/chroma_db
