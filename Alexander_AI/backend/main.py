@@ -24,14 +24,15 @@ app = FastAPI()
 # ---- Models ----
 Settings.embed_model = OllamaEmbedding(
     model_name="nomic-embed-text",
-    base_url=OLLAMA_BASE_URL, #"http://localhost:11434",
+    base_url=OLLAMA_BASE_URL,
 )
 
 Settings.llm = Ollama(
     model="llama3.1",
     temperature=0.2,
-    base_url=OLLAMA_BASE_URL, #"http://localhost:11434",
-    request_timeout=120.0,
+    base_url=OLLAMA_BASE_URL,
+    keep_alive="-1", # keep ai warm/open indefinitely
+    request_timeout=120.0, # if model is not warm/open then it will take a long time to respond, so we set it to a high value.
 )
 
 # ---- Load + Index documents ----
