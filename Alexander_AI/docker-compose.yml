@@ -1,4 +1,4 @@
-version: "3.9"
+# version: "3.9"
 
 services:
   ollama:
@@ -22,5 +22,17 @@ services:
       - ./backend/data:/app/data
       - ./backend/chroma_db:/app/chroma_db
 
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest #:lts
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - "127.0.0.1:9443:9443"
+      # - 8000:8000  # Remove if you do not intend to use Edge Agents
+
 volumes:
   ollama_volume:
+  portainer_data:
