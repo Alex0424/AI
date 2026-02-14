@@ -21,18 +21,21 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 app = FastAPI()
 
+chat_sessions = {}
+
 # ---- Models ----
 Settings.embed_model = OllamaEmbedding(
     model_name="nomic-embed-text",
-    base_url=OLLAMA_BASE_URL,
+    base_url=OLLAMA_BASE_URL, #"http://localhost:11434",
 )
 
 Settings.llm = Ollama(
     model="llama3.1",
     temperature=0.2,
-    base_url=OLLAMA_BASE_URL,
-    keep_alive="-1", # keep ai warm/open indefinitely
+    base_url=OLLAMA_BASE_URL, #"http://localhost:11434",
+    keep_alive="168h",  # 7 days to keep ai warm/open indefinitely
     request_timeout=120.0, # if model is not warm/open then it will take a long time to respond, so we set it to a high value.
+
 )
 
 # ---- Load + Index documents ----
@@ -64,17 +67,30 @@ query_engine = index.as_query_engine(
 # ---- API ----
 class ChatRequest(BaseModel):
     message: str
+    session_id: str
 
 @app.post("/chat")
 def chat(req: ChatRequest):
-    
+    session_id = req.session_id
+
+    if session_id not in chat_sessions:
+        chat_sessions[session_id] = index.as_chat_engine(
+            chat_mode="context",
+            similarity_top_k=4,
+            system_prompt=(
+                "You are an AI that answers questions only about me using the provided context. "
+                "If the answer is not in the context, say you do not know."
+            ),
+        )
+
     logger.info(f"User message: {req.message}")
-    
-    response = query_engine.query(req.message)
-    
+
+    response = chat_sessions[session_id].chat(req.message)
+
     logger.info(f"AI response: {response}")
-    
+
     return {"answer": str(response)}
+
 
 app.add_middleware(
     CORSMiddleware,
