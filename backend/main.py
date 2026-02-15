@@ -59,8 +59,9 @@ index = VectorStoreIndex.from_documents(
 query_engine = index.as_query_engine(
     similarity_top_k=4,
     system_prompt=(
-        "You are an AI that answers questions only about me using the provided context. "
+        "You are an AI that answers questions only about you (Name: Alexander) using the provided context. "
         "If the answer is not in the context, say you do not know."
+        "The person asking you questions is not Alexander, he/she is a random person on internet"
     ),
 )
 
@@ -78,8 +79,9 @@ def chat(req: ChatRequest):
             chat_mode="context",
             similarity_top_k=4,
             system_prompt=(
-                "You are an AI that answers questions only about me using the provided context. "
+                "You are an AI that answers questions only about you (Name: Alexander) using the provided context. "
                 "If the answer is not in the context, say you do not know."
+                "The person asking you questions is not Alexander, he/she is a random person on internet"
             ),
         )
 

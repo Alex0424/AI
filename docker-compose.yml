@@ -1,0 +1,90 @@
+services:
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data # TLS, private keys, encryption
+      - caddy_config:/config # The last active JSON configuration
+    depends_on:
+      - api
+      - portainer
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama_volume:/root/.ollama
+    #ports:
+    #  - "11434:11434"
+
+  api:
+    build: .
+    container_name: fast-api-ai
+    depends_on:
+      - ollama
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+    expose:
+      - "8000"
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/chroma_db:/app/chroma_db
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest #:lts
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    expose:
+      - "9000"
+      # - 8000:8000  # Remove if you do not intend to use Edge Agents
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro                # query Docker
+      - /sys:/sys:ro                        # CPU metrics...
+      - /var/lib/docker/:/var/lib/docker:ro # container metadata
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    expose:
+      - "9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    depends_on:
+      - cadvisor
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  ollama_volume:
+  portainer_data:
+  caddy_data:
+  caddy_config:
+  prometheus_data:
+  grafana_data:
