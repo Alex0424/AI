@@ -67,3 +67,79 @@ Dashboards -> New -> Import
 
 - Dashboard ID: `193`
 - DS_PROMETHEUS: `prometheus`
+
+## Infrastructure (IaC Terraform)
+
+### Development
+
+#### Install & Setup GCP CLI
+
+1. [GCP CLI](https://docs.cloud.google.com/sdk/docs/install-sdk#linux)
+
+2. `gcloud auth application-default login`
+
+3. `gcloud auth login`
+
+4. `gcloud projects list`
+
+5. `gcloud auth application-default set-quota-project <YOUR_PROJECT_ID>`
+
+6. `gcloud config set project <YOUR_PROJECT_ID>`
+
+7. `gcloud config get-value project`
+
+#### Make sure file is Unix
+
+```sh
+dos2unix cloud_script_install.sh
+```
+
+#### Deploy with Terraform (IaC)
+
+1. `terraform init`
+
+2. `terraform plan`
+
+3. `terraform apply`
+
+#### Destroy with Terraform
+
+1. `terraform destroy -target=google_compute_instance.ai_vm`
+
+
+2. `terraform destroy -target=google_compute_firewall.allow_http_https`
+
+### TF Config
+
+[provider.tf](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/versi)
+
+### Debug
+
+#### Monitor Cloud Init script (SSH to VM required)
+
+```sh
+sudo journalctl -u google-startup-scripts.service -f
+```
+
+#### Docker compose
+
+Container status:
+
+```sh
+docker ps
+```
+
+Restart stack:
+
+```sh
+docker compose down
+docker compose up -d
+```
+
+#### Test API
+
+```sh
+curl https://api.alexanderlindholm.net/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Who are you?","session_id":"test123"}'
+```

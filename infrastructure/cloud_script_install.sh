@@ -23,28 +23,10 @@ docker --version
 echo "Docker Compose version:"
 docker compose version
 
-echo "Installing Caddy"
-sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-sudo chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-sudo chmod o+r /etc/apt/sources.list.d/caddy-stable.list
-sudo apt update
-sudo apt install caddy
-
-echo "Writing Caddyfile"
-cat <<EOF > /etc/caddy/Caddyfile
-api.alexanderlindholm.net {
-    reverse_proxy localhost:8000
-    encode gzip
-}
-EOF
-
-systemctl reload caddy
-
 echo "Cloning project repository"
-PROJECT_DIR="/home/$USER/AI"
-echo "Cloning project..."
+PROJECT_DIR="/opt/ai"
+sudo mkdir -p $PROJECT_DIR
+sudo chown -R $USER:$USER $PROJECT_DIR
 git clone https://github.com/Alex0424/AI.git "$PROJECT_DIR"
 cd "$PROJECT_DIR"
 
@@ -61,7 +43,7 @@ docker exec ollama ollama pull llama3.1
 
 echo "=== 3 Verify services ==="
 echo "Waiting a few seconds for services to start..."
-sleep 10
+sleep 15
 
 echo "Ollama models:"
 docker exec ollama ollama list
@@ -72,5 +54,5 @@ docker compose restart api
 pub_ip=$(curl ifconfig.me)
 
 echo "IP: $pub_ip"
-echo "Deployment complete! API available at:"
+echo "Deployment complete! Alexander AI available at:"
 echo "https://api.alexanderlindholm.net/chat"
