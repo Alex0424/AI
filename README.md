@@ -113,6 +113,46 @@ dos2unix cloud_script_install.sh
 
 [provider.tf](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/versi)
 
+### Ansible
+
+#### SSH key for Ansible
+
+```sh
+ssh-keygen -t rsa -b 2048 \
+-f ~/.ssh/gcp-ansible \
+-C ansible
+```
+
+```sh
+ssh -i ~/.ssh/gcp-ansible ansible@34.51.235.121
+```
+
+#### Test
+
+Ping machine
+
+```sh
+ansible -i inventory.ini ai -m ping
+```
+
+this means it is working:
+
+```sh
+# "ping": "pong"
+```
+
+if you get man-in-middle attack then do this to fix:
+
+```
+ssh-keygen -R 34.51.235.121
+```
+
+Run:
+
+```sh
+ansible-playbook -i inventory.ini playbook.yml
+```
+
 ### Debug
 
 #### Monitor Cloud Init script (SSH to VM required)

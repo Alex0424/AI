@@ -25,6 +25,19 @@ resource "google_compute_firewall" "allow_http_https" {
   target_tags   = ["ai-server"]
 }
 
+resource "google_compute_firewall" "allow_ssh" {
+  name    = "allow-ssh"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["ai-server"]
+}
+
 # VM
 
 resource "google_compute_instance" "ai_vm" {
@@ -54,10 +67,10 @@ resource "google_compute_instance" "ai_vm" {
   }
 
   metadata = {
-    enable-oslogin = "TRUE"
+    ssh-keys = "ansible:${file("~/.ssh/gcp-ansible.pub")}"
   }
 
-  metadata_startup_script = file("${path.module}/cloud_script_install.sh")
+  #metadata_startup_script = file("${path.module}/cloud_script_install.sh")
 
 }
 

@@ -18,5 +18,5 @@ variable "zone" {
 variable "machine_type" {
   description = "VM machine type"
   type        = string
-  default     = "e2-standard-4"
+  default     = "e2-standard-8" # 8 vCPUs, 32 GB memory
 }

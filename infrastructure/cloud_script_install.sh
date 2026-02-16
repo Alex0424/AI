@@ -12,6 +12,8 @@ sudo apt install -y docker.io git curl
 
 sudo systemctl enable docker --now
 
+#sudo usermod -aG docker lindholmalex_la
+
 echo "Installing Docker Compose v2 plugin..."
 sudo mkdir -p /usr/local/lib/docker/cli-plugins
 sudo curl -SL https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-linux-x86_64 \

@@ -1,0 +1,63 @@
+- name: Configure AI VM
+  hosts: ai
+  become: yes
+
+  tasks:
+
+    - name: Update apt
+      apt:
+        update_cache: yes
+
+    - name: Install packages
+      apt:
+        name:
+          - docker.io
+          - git
+          - curl
+        state: present
+
+    - name: Enable Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Create Docker CLI plugins directory
+      file:
+        path: /usr/local/lib/docker/cli-plugins
+        state: directory
+        mode: '0755'
+
+    - name: Install Docker Compose plugin
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-linux-x86_64
+        dest: /usr/local/lib/docker/cli-plugins/docker-compose
+        mode: '0755'
+
+    - name: Clone repository
+      git:
+        repo: https://github.com/Alex0424/AI.git
+        dest: /home/lindholmalex_la/AI
+        update: yes
+
+    - name: Run Docker Compose
+      command: docker compose up -d --build
+      args:
+        chdir: /home/lindholmalex_la/AI
+
+    - name: Pull Ollama embedding model
+      command: docker exec ollama ollama pull nomic-embed-text
+
+    - name: Pull Ollama LLM model
+      command: docker exec ollama ollama pull llama3.1
+
+    - name: Close Docker Compose
+      command: docker compose down
+      args:
+        chdir: /home/lindholmalex_la/AI
+
+    - name: Start Docker Compose
+      command: docker compose up -d
+      args:
+        chdir: /home/lindholmalex_la/AI
+
