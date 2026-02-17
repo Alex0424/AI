@@ -17,11 +17,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup SSH key
+      - name: Setup Private SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/gcp-ansible
           chmod 600 ~/.ssh/gcp-ansible
+
+      - name: Setup SSH public key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/gcp-ansible.pub
+          chmod 644 ~/.ssh/gcp-ansible.pub
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2

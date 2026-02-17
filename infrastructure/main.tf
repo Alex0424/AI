@@ -67,7 +67,7 @@ resource "google_compute_instance" "ai_vm" {
   }
 
   metadata = {
-    ssh-keys = "ansible:${file("~/.ssh/gcp-ansible.pub")}"
+    ssh-keys = "ansible:${file("/home/runner/.ssh/gcp-ansible.pub")}" # Default: ~/.ssh/gcp-ansible.pub
   }
 
   #metadata_startup_script = file("${path.module}/cloud_script_install.sh")
