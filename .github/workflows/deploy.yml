@@ -66,12 +66,17 @@ jobs:
           echo "${{ steps.ip.outputs.IP }} ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/gcp-ansible ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> inventory.ini
           ansible-playbook -i inventory.ini ansible/playbook.yml
 
-      - name: Terraform Destroy
+      - name: Terraform Destroy (except IP)
         if: always()
         working-directory: infrastructure
-        run: terraform destroy -auto-approve -input=false
+        run: |
+          terraform destroy -auto-approve -input=false \
+            -target=google_compute_instance.ai_vm \
+            -target=google_compute_firewall.allow_http_https \
+            -target=google_compute_firewall.allow_ssh
         env:
           TF_VAR_project_id: project-df34752d-adab-497f-b67
           TF_VAR_region: europe-north2
           TF_VAR_zone: europe-north2-b
           TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+
