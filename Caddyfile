@@ -1,3 +1,7 @@
+{
+    acme_ca https://acme-staging-v02.api.letsencrypt.org/directory # this is for testing purposes
+}
+
 api.alexanderlindholm.net {
     reverse_proxy api:8000
     encode gzip

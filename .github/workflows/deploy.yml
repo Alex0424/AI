@@ -1,1 +1,61 @@
-# TODO: Add Automation and GCP Credentials in Github Secrets
+name: Deploy AI Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write # compatible Workload Identity if it gets added in future
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/gcp-ansible
+          chmod 600 ~/.ssh/gcp-ansible
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          project_id: project-df34752d-adab-497f-b67
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: infrastructure
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: infrastructure
+        run: terraform apply -auto-approve # -input=false
+        env:
+          TF_VAR_project_id: project-df34752d-adab-497f-b67
+          TF_VAR_region: europe-north2
+          TF_VAR_zone: europe-north2-b
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+
+      - name: Get VM IP
+        id: ip
+        working-directory: infrastructure
+        run: |
+          echo "IP=$(terraform output -raw public_ip)" >> $GITHUB_OUTPUT
+
+      - name: Install Ansible
+        run: sudo apt-get update && sudo apt-get install -y ansible
+
+      - name: Run Ansible
+        run: |
+          echo "[ai]" > inventory.ini
+          echo "${{ steps.ip.outputs.IP }} ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/gcp-ansible ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> inventory.ini
+          ansible-playbook -i inventory.ini ansible/playbook.yml
